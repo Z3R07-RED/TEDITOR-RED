@@ -1,0 +1,181 @@
+#!/data/data/com.termux/files/usr/bin/bash
+#TEDITOR-RED
+#Coded by Z3R07-RED 2021
+
+# Define colors
+R='\e[0;31m\033[1m'
+G='\e[0;32m\033[1m'
+Y='\e[0;33m\033[1m'
+B='\e[0;34m\033[1m'
+M='\e[0;35m\033[1m'
+C='\e[0;36m\033[1m'
+W='\033[0m\e[0m'
+
+DIRECTORY="/sdcard/TEDITOR-RED"
+TEDITORDIR="$HOME/.TEDITOR-RED"
+FILE_CONF="$HOME/.TEDITOR-RED/TEditor-red.conf"
+CBANNER="$TEDITORDIR/mobile.txt"
+IBANNER="$TEDITORDIR/internet.txt"
+
+if [[ -s "$FILE_CONF" ]]; then
+    DIRECTORY="$(cat $FILE_CONF)"
+else
+    DIRECTORY="/sdcard/TEDITOR-RED"
+fi
+
+if [[ -d "/sdcard/" ]]; then
+    if [[ ! -d "$DIRECTORY" ]]; then
+        mkdir -p "$DIRECTORY" 2>/dev/null
+    fi
+else
+    echo -e "${R}[ERROR]: ${W}Permiso de almacenamiento denegado."
+fi
+
+# This file contains universal functions.
+
+# unexpected error
+function unexpected_error(){
+echo $(clear)
+echo -e "\n${R}[!] unexpected error.${W}"
+echo ""
+sleep 4
+tput cnorm 2>/dev/null
+exit 1
+}
+
+# INTERNET
+function internet_connection(){
+INTERNET=""
+curl -I -s "www.google.es" &> /dev/null
+
+if [[ $? -eq 0 ]]; then
+    INTERNET="True"
+else
+    INTERNET="False"
+    echo $(clear)
+    cat "$IBANNER" 2>/dev/null
+    rm -rf "$@" 2>/dev/null
+    echo -e "\n${R}[INTERNET]:${M} Not connected!${W}"
+    sleep 4
+    echo ""; exit 1
+fi
+}
+
+
+
+if [[ -f "$@" ]]; then
+    while true;
+    do
+    echo $(clear)
+    echo -e "${G}        TEDITOR${W} - ${R}RED${W}"
+    echo -e "${C} ---{  Club Secreto 07  }---${W}"
+    echo -e "${W}     Coded by Z3R07-RED${W}"
+    echo ""
+    echo -e "[ARCHIVO]: $(basename "$@")"
+    echo ""
+    echo -e "     1) EDITOR VIM"
+    echo -e "     2) EDITOR NANO"
+    echo -e "     3) NÚMERO INFORMACIÓN"
+    echo -e "     4) CONFIGURAR DIRECTORIO"
+    echo -e "     0) EXIT"
+    printf "\n${G} --➤ ${W}"
+    read -n 1 option
+    echo ""
+
+    if [[ "$option" == 1 ]]; then
+        if [[ -f "$1" ]]; then
+            if [ ! "$(command -v vim)" ]; then
+                echo -e "${R}[ERROR]:${W} El editor Vim no está instalado."
+                sleep 3
+            else
+                vim "$@" && mv "$@" "$DIRECTORY" 2>/dev/null
+            fi
+        else
+            echo -e "\n${R}[ERROR]:${W} No es un archivo o directorio."
+            sleep 3
+        fi
+        rm -rf "$@" 2>/dev/null
+        echo $(clear)
+        echo -e "\n${G}[SALVADO]:${W} $DIRECTORY/$(basename "$@")"
+        sleep 3
+        break
+    elif [[ "$option" == 2 ]]; then
+        if [[ -f "$1" ]]; then
+            if [ ! "$(command -v nano)" ]; then
+                echo -e "${R}[ERROR]:${W} El editor nano no está instalado."
+                sleep 3
+            else
+                nano "$@" && mv "$@" "$DIRECTORY" 2>/dev/null
+            fi
+        else
+            echo -e "\n${R}[ERROR]:${W} No es un archivo."
+            sleep 3
+        fi
+        rm -rf "$@" 2>/dev/null
+        echo $(clear)
+        echo -e "\n${G}[SALVADO]:${W} $DIRECTORY/$(basename "$@")"
+        sleep 3
+        break
+    elif [[ "$option" == 3 ]]; then
+        echo $(clear)
+        cat "$CBANNER" 2>/dev/null
+        echo -e "${G}        ---{  Club Secreto 07  }---${W}"
+        sleep 0.2
+        echo -e "${R}            Coded by Z3R07-RED${W}"
+        internet_connection
+        if [[ -f "$TEDITORDIR/PhoneNumbersCS07.py" ]]; then
+            mv "$@" "$TEDITORDIR/number.tmp" 2>/dev/null
+            if [[ -s "$TEDITORDIR/number.tmp" ]]; then
+                cd "$TEDITORDIR/"
+                python3 "PhoneNumbersCS07.py"
+                cd ~/
+                mv "$TEDITORDIR/info.txt" "$DIRECTORY/$(basename "$@" 2>/dev/null)" 2>/dev/null
+                rm -rf "$TEDITORDIR/number.tmp" 2>/dev/null
+            else
+                rm -rf "$TEDITORDIR/number.tmp" 2>/dev/null
+                unexpected_error
+            fi
+        else
+            unexpected_error
+        fi
+        if [[ -f "$DIRECTORY/$(basename "$@" 2>/dev/null)" ]]; then
+            sleep 0.2
+            echo -e "${G}[${W}++${G}]${C} INFO${W} -->>> $DIRECTORY/$(basename "$@" 2>/dev/null)"
+        fi
+        sleep 0.2
+        printf "\n${C}[${W}>>${C}]${Y} PRESIONE ${G}ENTER${Y} PARA SALIR:${W} "
+        read enter
+        exit 0
+    elif [[ "$option" == 4 ]]; then
+        if [[ ! -d "$TEDITORDIR" ]]; then
+            mkdir "$TEDITORDIR" 2>/dev/null
+        fi
+        echo -e "\n${Y}[CONFIGURACIÓN]${W}"
+        echo -e "\nIngrese la ruta completa donde desea que \"TEDITOR-RED\" guarde sus archivos."
+        printf "${G}[DIRECTORIO]:${W} "
+        read DIRECTORIO
+        if [[ -d "$DIRECTORIO" ]]; then
+            DIRECTORYBS=$(basename "$DIRECTORIO")
+            DIRECTORYBST=$(echo "$DIRECTORIO" |awk -F "$DIRECTORYBS" '{print $1}' 2>/dev/null)
+            DIRECTORY="${DIRECTORYBST}${DIRECTORYBS}"
+            echo "$DIRECTORY" > "$FILE_CONF" 2>/dev/null
+            echo -e "\n${G}[DIRECTORIO]:${W} '$DIRECTORY' Configurado con éxito."
+            sleep 4
+        else
+            echo -e "\n${R}[ERROR]:${W} '$DIRECTORIO' No es un directorio."
+            sleep 3
+        fi
+    elif [[ "$option" == 0 ]]; then
+        rm -rf "$@" 2>/dev/null
+        exit 0
+    else
+        echo -e "\n${R}[ERROR]:${W} option!"
+        sleep 2
+    fi
+    done
+
+else
+    exit 1
+fi
+
+# Club Secreto 07

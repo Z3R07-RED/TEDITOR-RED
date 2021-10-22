@@ -20,7 +20,7 @@ Su instalación es muy sencilla.
 Descargar:
 
 ```
-git clone https://github.com/Z3R07-RED/TEDITOR-RED
+git clone https://github.com/Z3R07-RED/TEDITOR-RED.git
 ```
 
 Instalar:

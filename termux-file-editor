@@ -17,7 +17,7 @@ FILE_CONF="$HOME/.TEDITOR-RED/TEditor-red.conf"
 CBANNER="$TEDITORDIR/mobile.txt"
 IBANNER="$TEDITORDIR/internet.txt"
 
-if [[ -s "$FILE_CONF" ]]; then
+if [[ -f "$FILE_CONF" && -s "$FILE_CONF" ]]; then
     DIRECTORY="$(cat $FILE_CONF)"
 else
     DIRECTORY="/sdcard/TEDITOR-RED"
@@ -25,7 +25,7 @@ fi
 
 if [[ -d "/sdcard/" ]]; then
     if [[ ! -d "$DIRECTORY" ]]; then
-        mkdir -p "$DIRECTORY" 2>/dev/null
+        mkdir "$DIRECTORY" 2>/dev/null
     fi
 else
     echo -e "${R}[ERROR]: ${W}Permiso de almacenamiento denegado."
